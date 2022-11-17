@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "chordgen": {
+      "commandName": "Project",
+      "commandLineArgs": "10 5"
+    }
+  }
+}

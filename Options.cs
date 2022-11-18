@@ -1,7 +1,4 @@
-﻿using System.Diagnostics.Contracts;
-using System.Linq;
-
-namespace chordgen
+﻿namespace chordgen
 {
     internal class Options
     {
@@ -125,6 +122,8 @@ namespace chordgen
         {
             return new SortedDictionary<string, ParameterProcessor>(StringComparer.OrdinalIgnoreCase)
             {
+                { "--help", PrintHelp },
+                { "--?", PrintHelp },
                 { "--major", (args, index, options) => options.AddCharacter(string.Empty) },
                 { "--m", (args, index, options) => options.AddCharacter("m") },
                 { "--7", (args, index, options) => options.AddCharacter("7") },
@@ -134,6 +133,12 @@ namespace chordgen
                 { "A", (args, index, options) => options.AddString("A") },
                 { "D", (args, index, options) => options.AddString("D") },
             };
+        }
+
+        private static int PrintHelp(string[] args, int index, Options options)
+        {
+            Console.WriteLine(Resources.help);
+            return 0; // fail the command line parsing immediately
         }
     }
 }

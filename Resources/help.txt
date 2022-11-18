@@ -1,0 +1,10 @@
+Use: chordgen [options] [strings]
+	options:
+		--help, --? - print this message
+		--major generate major chords
+		--m     generate minor chorde
+		--7     generate dominant seventh chords
+		--sus2  generate suspended 2 chords
+		--sus4  generage suspended 4 chords
+	strings:
+		any combination or E, A and D

@@ -1,4 +1,4 @@
-Use: chordgen [options] [strings]
+Use: chordgen [options] [strings] [number]
 	options:
 		--help, --? - print this message
 		--major generate major chords
@@ -8,3 +8,5 @@ Use: chordgen [options] [strings]
 		--sus4  generage suspended 4 chords
 	strings:
 		any combination or E, A and D
+	number:
+		number of chords to generate; defaults to 10

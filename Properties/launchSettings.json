@@ -2,7 +2,7 @@
   "profiles": {
     "chordgen": {
       "commandName": "Project",
-      "commandLineArgs": "--help"
+      "commandLineArgs": "--major --minor E A 100"
     }
   }
 }

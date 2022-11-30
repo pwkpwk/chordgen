@@ -163,6 +163,7 @@ namespace chordgen
                 { "--?", PrintHelp },
                 { "--major", (args, index, options) => options.AddCharacter(string.Empty) },
                 { "--m", (args, index, options) => options.AddCharacter("m") },
+                { "--minor", (args, index, options) => options.AddCharacter("m") },
                 { "--7", (args, index, options) => options.AddCharacter("7") },
                 { "--sus2", (args, index, options) => options.AddCharacter("sus2") },
                 { "--sus4", (args, index, options) => options.AddCharacter("sus4") },

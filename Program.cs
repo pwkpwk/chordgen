@@ -13,7 +13,7 @@
                 string note = s.GetRandomNote(random);
                 string character = options.GetRandomCharacter();
 
-                Console.WriteLine($"{s.Name} {note}{character}");
+                Console.WriteLine($"{s.Name}\t{note}{character}");
             }
         }
     }

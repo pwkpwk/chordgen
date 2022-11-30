@@ -2,47 +2,44 @@
 {
     internal class GuitarString
     {
-        private static readonly string[] _scale = { "A", "A#", "Bb", "B", "C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb", "G", "G#", "Ab" };
-        private readonly static string[] _emptyString = { };
+        private readonly static IList<Pitch> _emptyString = new List<Pitch>();
         private readonly string _name;
-        private readonly string[] _notes;
+        private readonly IList<Pitch> _notes;
 
-        public GuitarString(string name)
+        public GuitarString(string name, int fretCount)
         {
             _name = name;
-            _notes = PickNotes(name);
+            _notes = PickNotes(name, fretCount + 1); // Open string through the highest fret
         }
 
         public string Name { get { return _name; } }
 
-        public bool IsEmpty { get { return _notes.Length == 0; } }
+        public bool IsEmpty { get { return _notes.Count == 0; } }
 
         public string GetRandomNote(Random random)
         {
-            return _notes[random.Next(_notes.Length)];
+            return _notes[random.Next(_notes.Count)].GetRandomName(random);
         }
 
-        private string[] PickNotes(string name)
+        private IList<Pitch> PickNotes(string name, int fretCount)
         {
-            for (int index = 0; index < _scale.Length; ++index)
+            int readIndex = ChromaticScale.FindPitch(name);
+
+            if (readIndex >= 0)
             {
-                if (_scale[index].Equals(name))
+                IList<Pitch> pitches = new List<Pitch>(ChromaticScale.Pitches.Length);
+
+                for (int writeIndex = 0; writeIndex < fretCount; ++writeIndex)
                 {
-                    string[] notes = new string[_scale.Length];
-                    int readIndex = index;
+                    pitches.Add(ChromaticScale.Pitches[readIndex++]);
 
-                    for (int writeIndex = 0; writeIndex < _scale.Length; ++writeIndex)
+                    if (readIndex >= ChromaticScale.Pitches.Length)
                     {
-                        notes[writeIndex] = _scale[readIndex++];
-
-                        if (readIndex >= _scale.Length)
-                        {
-                            readIndex = 0;
-                        }
+                        readIndex = 0;
                     }
-
-                    return notes;
                 }
+
+                return pitches;
             }
 
             return _emptyString;

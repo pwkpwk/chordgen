@@ -1,22 +1,25 @@
-﻿namespace chordgen
+﻿using System.Xml.Linq;
+
+namespace chordgen
 {
     internal class Options
     {
         private static readonly IDictionary<string, ParameterProcessor> _processors = MakeParameterProcessors();
+        private const int FRETS_LIMIT = 24;
         private readonly Random _random;
         private delegate int ParameterProcessor(string[] args, int index, Options options);
         private readonly ISet<string> _characters = new HashSet<string>();
-        private readonly IDictionary<string, GuitarString> _strings = new Dictionary<string, GuitarString>();
-        private readonly Lazy<GuitarString[]> _stringsArray;
+        private readonly IList<string> _stringNames = new List<string>();
+        private readonly IList<GuitarString> _strings = new List<GuitarString>();
         private readonly Lazy<string[]> _charactersArray;
 
         public Options(string[] args, Random random)
         {
             _random = random;
             ChordCount = 0;
+            FretCount = 12;
             bool failed = false;
 
-            _stringsArray = new Lazy<GuitarString[]>(() => _strings.Values.ToArray());
             _charactersArray = new Lazy<string[]>(() =>
             {
                 if (_characters.Count == 0)
@@ -53,21 +56,24 @@
                     ChordCount = 10;
                 }
 
-                if (_strings.Count == 0)
+                if (_stringNames.Count == 0)
                 {
-                    AddString("E");
-                    AddString("A");
-                    AddString("D");
+                    AddStringName("E");
+                    AddStringName("A");
+                    AddStringName("D");
                 }
+
+                PopulateStrings();
             }
         }
 
         public int ChordCount { get; private set; }
 
+        public int FretCount { get; private set; }
+
         public GuitarString GetRandomString()
         {
-            GuitarString[] strings = _stringsArray.Value;
-            return strings[_random.Next(_stringsArray.Value.Length)];
+            return _strings[_random.Next(_strings.Count)];
         }
 
         public string GetRandomCharacter()
@@ -87,15 +93,42 @@
             return 1;
         }
 
-        private int AddString(string name)
+        private int AddFretCount(string[] args, int index)
         {
-            GuitarString s = new GuitarString(name);
-            if (s.IsEmpty)
+            if (index < args.Length - 1 && int.TryParse(args[index + 1], out int count) && count > 0 && count <= FRETS_LIMIT)
             {
-                return 0;
+                FretCount = count;
+                return 2;
             }
-            _strings.Add(name, s);
-            return 1;
+
+            Console.Error.WriteLine($"Number of frets nust be an integer number from 1 to {FRETS_LIMIT}");
+            return 0;
+        }
+
+        private int AddStringName(string name)
+        {
+            if (ChromaticScale.FindPitch(name) >= 0)
+            {
+                _stringNames.Add(name);
+                return 1;
+            }
+
+            return 0;
+        }
+
+        private void PopulateStrings()
+        {
+            IDictionary<string, GuitarString> strings = new Dictionary<string, GuitarString>();
+
+            foreach (string name in _stringNames)
+            {
+                strings.Add(name, new GuitarString(name, FretCount));
+            }
+
+            foreach (GuitarString s in strings.Values)
+            {
+                _strings.Add(s);
+            }
         }
 
         private int ProcessParameter(string[] args, int index)
@@ -105,6 +138,10 @@
             if (_processors.TryGetValue(args[index], out var processor))
             {
                 skip = processor(args, index, this);
+            }
+            else if (AddStringName(args[index]) > 0)
+            {
+                skip = 1;
             }
             else if (int.TryParse(args[index], out var count))
             {
@@ -130,9 +167,7 @@
                 { "--7", (args, index, options) => options.AddCharacter("7") },
                 { "--sus2", (args, index, options) => options.AddCharacter("sus2") },
                 { "--sus4", (args, index, options) => options.AddCharacter("sus4") },
-                { "E", (args, index, options) => options.AddString("E") },
-                { "A", (args, index, options) => options.AddString("A") },
-                { "D", (args, index, options) => options.AddString("D") },
+                { "--frets", (args, index, options) => options.AddFretCount(args, index) },
             };
         }
 

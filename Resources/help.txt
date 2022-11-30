@@ -1,12 +1,13 @@
 Use: chordgen [options] [strings] [number]
 	options:
-		--help, --? - print this message
-		--major       generate major chords
-		--m, --minor  generate minor chorde
-		--7           generate dominant seventh chords
-		--sus2        generate suspended 2 chords
-		--sus4        generage suspended 4 chords
+		--help, --?  print this message
+		--major      generate major chords
+		--m          generate minor chorde
+		--7          generate dominant seventh chords
+		--sus2       generate suspended 2 chords
+		--sus4       generate suspended 4 chords
 	strings:
-		any combination or E, A and D
+		any combination of valid notes (E, A#, Db, etc.);
+		if none specified, chords on E, A and D strings will be generated
 	number:
 		number of chords to generate; defaults to 10
